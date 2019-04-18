@@ -23,7 +23,7 @@ module pipelineControlUnit(input logic clk, reset,
 				//asignamos la entrada del registro a la instruccion obtenida del instruction memory
 				assign InstFtoInstD_IN = { InstrF };
 				//obtenemos la salida del primer registro del pipeline 
-				pipelineRegFtoD  #(32) pipelineRegFtoD_Unit( clk, reset, ~stallD, flushD, InstFtoInstD_IN, InstFtoInstD_OUT);
+				pipelineRegFtoD  #(32) pipelineRegFtoD_Unit( clk, reset, ~stallD, flushD, InstFtoInstD_IN, InstFtoInstD_OUT);  //###################################################
 				//Inicializamos el decoder para la instruccion
 				//								Op					     funct				           Rd						
 				pipelineDecoder pipelineDecoder_Unit(.Op(InstFtoInstD_OUT[27:26]), .Funct(InstFtoInstD_OUT[25:20]), .Rd(InstFtoInstD_OUT[15:12]),
@@ -34,7 +34,7 @@ module pipelineControlUnit(input logic clk, reset,
 				//							    4       1        1          1         1         1           4          1        1         1                 4    
 				//                   [20:17]   [16]     [15]       [14]      [13]      [12]       [11:8]       [7]      [6]      [5:4]             [3:0]
 				assign DtoEReg_IN = { Flags, PCSrcD, RegWriteD, MemtoRegD, NoWrite, MemWriteD, ALUControlD, BranchD, ALUSrcD, FlagWriteD, InstFtoInstD_OUT[31:28]};
-				pipelineRegDtoE #(21) pipelineRegDtoE_Unit( clk, reset, flushE, DtoEReg_IN, DtoEReg_OUT );
+				pipelineRegDtoE #(21) pipelineRegDtoE_Unit( clk, reset, flushE, DtoEReg_IN, DtoEReg_OUT );  //###################################################
 				//DtoEReg_OUT = FlagsE PCSrcE RegWriteE MemtoRegE NoWrite MemWriteE ALUControlE BranchE ALUSrcE FlagWriteE CondE
 				//					   4      1       1         1          1       1          4         1       1         1       4    
 				//             [20:17] [16]    [15]      [14]       [13]    [12]      [11:8]      [7]     [6]      [5:4]   [3:0]
@@ -68,7 +68,7 @@ module pipelineControlUnit(input logic clk, reset,
 				//---------------------------------------Execute a Memory---------------------------------------------------------------------------------
 				//
 				assign EtoMReg_IN = {PCSrcE, RegWriteE, MemtoRegE, MemWriteE};
-				pipelineRegEtoM #(4) pipelineRegEtoM_Unit( clk, reset, EtoMReg_IN, EtoMReg_OUT ); 
+				pipelineRegEtoM #(4) pipelineRegEtoM_Unit( clk, reset, EtoMReg_IN, EtoMReg_OUT );  //###################################################
 				//EtoMReg_OUT = PCSrcM RegWriteM MemtoRegM MemWriteM
 				assign MemWriteM = EtoMReg_OUT[0]; 			// MemWrite a la memoria de datos		
 				assign RegWriteM = EtoMReg_OUT[2];			// RegWriteM al hazard Unit
@@ -77,7 +77,7 @@ module pipelineControlUnit(input logic clk, reset,
 				//								 PCSrcW          RegWriteW       MemtoRegW
 				assign MtoWBReg_IN = {EtoMReg_OUT[3], EtoMReg_OUT[2], EtoMReg_OUT[1]}; 
 				
-				pipelineRegMtoWB #(3) pipelineRegMtoWB_Unit( clk, reset, MtoWBReg_IN, MtoWBReg_OUT );
+				pipelineRegMtoWB #(3) pipelineRegMtoWB_Unit( clk, reset, MtoWBReg_IN, MtoWBReg_OUT );  //###################################################
 				
 				assign PCSrcW 		 = MtoWBReg_OUT[2];					// PCSrc al mux antes del PC
 				assign RegWriteW   = MtoWBReg_OUT[1];					// RegWriteW a la memoria de registros y hazard UNit
