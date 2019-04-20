@@ -1,23 +1,25 @@
-module conditional_logic(input logic clk, reset,NoWrite,
-								 input logic [3:0] Cond, ALUFlags,
-								 input logic PCS,RegW,MemW,
-								 input logic [1:0] FlagW,
-								 output logic PCSrc,RegWrite,MemWrite);
+module pipelineConditionalLogic(input logic clk, reset,NoWrite,
+										  input logic [3:0] CondE, ALUFlags, flagsE,
+										  input logic PCSrcE_IN,RegWriteE_IN,MemWriteE_IN,BranchE,
+										  input logic [1:0] FlagWriteE,
+										  output logic PCSrcE_OUT,RegWriteE_OUT,MemWriteE_OUT,
+										  output logic [3:0] flags);
 	logic CondEx;
 	logic [1:0] FlagWrite;
-	logic [3:0] flags;
 	//first we start by saving the ALUFlags result in 2 registers
 	REG_EN reg_1(clk,reset,FlagWrite[0],ALUFlags[1:0],flags[1:0]);
 	REG_EN reg_2(clk,reset,FlagWrite[1],ALUFlags[3:2],flags[3:2]);
 	//after that we add the check the conditions
-	conditions conditions_unit(Cond, flags,CondEx);
+	conditions conditions_unit(CondE, flagsE,CondEx);
 	//FlagWrite[0] will only be 1 if selected flag is 1 and condition enable is on
 	//FlagWrite[0] will only be 1 if selected flag is 1 and condition enable is on and we are doing a ADD, SUB o CMP.
-	assign FlagWrite = FlagW & {2{CondEx}}; 
+	assign FlagWrite = FlagWriteE & {2{CondEx}}; 
 	//RegWrite will only be 1 if we want to write to a register and if selected flag is 1 
-	assign RegWrite = RegW & CondEx & ~NoWrite; 
+	assign RegWriteE_OUT = RegWriteE_IN & CondEx & ~NoWrite; 
 	//MemWrite will only be 1 if we want to write to memory(ram) and if selected flag is 1
-	assign MemWrite = MemW & CondEx; 
+	assign MemWriteE_OUT = MemWriteE_IN & CondEx; 
 	//PCSrc will only be onw if we want to load an address in to the PC
-	assign PCSrc = PCS & CondEx; 
+	assign PCSrcE_OUT = PCSrcE_IN & CondEx; 
+	
+	assign BranchTakenE = BranchE & CondEx; 
 endmodule

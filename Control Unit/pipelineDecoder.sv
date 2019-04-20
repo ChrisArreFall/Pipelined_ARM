@@ -102,8 +102,11 @@ module pipelineDecoder(input  logic [1:0] Op,
 				4'b1100: ALUControl = 4'b0011;//OR
 				4'b0100: ALUControl = 4'b0000;//ADD
 				4'b0010: ALUControl = 4'b0001;//SUB
+				4'b1000: ALUControl = 4'b1000;//LSL
+				4'b1001: ALUControl = 4'b1001;//LSR
+				4'b0001: ALUControl = 4'b0100;//EOR
 				4'b1010: ALUControl = 4'b0001;//CMP
-				default: ALUControl = 2'bx;
+				default: ALUControl = 4'bx;
 			endcase
 			//if we are doing a CMP NoWrite is 1 else NoWrite is 0
 			NoWrite = (funct[4:1]==4'b1010) ? 1'b1 : 1'b0;
@@ -114,7 +117,7 @@ module pipelineDecoder(input  logic [1:0] Op,
 		end
 	else
 		begin
-			ALUControl = 2'b00;
+			ALUControl = 4'b0000;
 			NoWrite = 1'b0;
 			FlagW = 2'b00;
 		end

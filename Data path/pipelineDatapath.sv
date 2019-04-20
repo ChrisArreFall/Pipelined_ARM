@@ -21,10 +21,13 @@ module pipelineDatapath( input logic clk, reset,
 					logic [67:0]  MtoWBReg_IN, MtoWBReg_OUT;
 					logic [31:0]  muxPC_Out, PCPlus4, ExtImm, WriteDataE, PC, SrcAE, SrcBE,RD1,RD2, ResultW, ALUResultE;
 					logic [3:0]   WA3W, WA3E, WA3M;
-					logic [3:0]   RA1D, RA2D, RA1E, RA2E;		
-							
+					logic [3:0]   RA1D, RA2D, RA1E, RA2E;	
+				
 							
 					logic match_1e_m, match_2e_m, match_1e_w, match_2e_w, match_12d_e;
+					
+					
+					
 					
 					//Iniciamos con los 2 mux detras del PC'
 					//En el primero van conectados PC + 4 y el ResultW
@@ -36,11 +39,11 @@ module pipelineDatapath( input logic clk, reset,
 					//Ahora proseguimos con el registro del PC
 					pipelinePCReg #(32) pipelinePCReg_Unit(clk, reset, ~stallF, PC, PCF);	
 					//Creamos el sumador del PCPlus4F
-					adderARM #(32) adderARM_Unit(PC, 3'b100, PCPlus4);
+					adderARM #(32) adderARM_Unit(PCF, 32'b100, PCPlus4);
 					
 					//--------------------------------------Registro de Fetch a Decode-----------------------------------------------------------
 					assign InstFtoInstD_IN = {InstrF};
-					pipelineRegFtoD  #(64) pipelineRegFtoD_Unit( clk, reset, ~stallD, flushD, InstFtoInstD_IN, InstFtoInstD_OUT);  //###################################################
+					pipelineRegFtoD  #(32) pipelineRegFtoD_Unit( clk, reset, ~stallD, flushD, InstFtoInstD_IN, InstFtoInstD_OUT);  //###################################################
 					
 					//Ahora proseguimos con la parte antes de la memoria de registros
 					//El primer mux le entra Rn(Instr[19:16]) y el numero 15 ademas el selector seria el RegSrcD[0]
@@ -58,7 +61,7 @@ module pipelineDatapath( input logic clk, reset,
 																RD1,				//RD1
 																RD2);				//RD2
 												
-												
+					
 					//Ahora el extend
 					extend extend_unit(ImmSrcD,
 											 InstFtoInstD_OUT[23:0],
@@ -82,7 +85,7 @@ module pipelineDatapath( input logic clk, reset,
 					MUX_2 #(32) SrcBEMux_Unit(WriteDataE, DtoEReg_OUT[31:0], ALUSrcE, SrcBE);
 						
 					// ALU logic
-					ALU_N_bits #(32) aALU_N_bits_Unit(SrcAE, SrcBE, ALUControlE, ALUFlags, ALUResultE);
+					ALU_N_bits #(32) ALU_N_bits_Unit(SrcAE, SrcBE, ALUControlE, ALUFlags, ALUResultE);
 					
 					//--------------------------------------Registro de Execute a Memory-----------------------------------------------------------
 					//																	WAsE

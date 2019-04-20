@@ -16,9 +16,9 @@ module pipelineControlUnit(input logic clk, reset,
 				logic [20:0] DtoEReg_IN, DtoEReg_OUT;
 				logic [3:0]  ALUControlD, Flags, EtoMReg_IN, EtoMReg_OUT;
 				logic [2:0] MtoWBReg_IN, MtoWBReg_OUT;
-				logic [1:0]	 FlagWriteD, FlagWrite;
+				logic [1:0]	 FlagWriteD;
 				logic			 PCSrcD, RegWriteD, MemWriteD,NoWrite, MemtoRegD, ALUSrcD, 
-								 BranchD, CondEx, RegWriteE, MemWriteE, PCSrcE;
+								 BranchD, RegWriteE, MemWriteE, PCSrcE;
 				//---------------------------------------Fetch a Decode---------------------------------------------------------------------------------
 				//asignamos la entrada del registro a la instruccion obtenida del instruction memory
 				assign InstFtoInstD_IN = { InstrF };
@@ -39,25 +39,15 @@ module pipelineControlUnit(input logic clk, reset,
 				//					   4      1       1         1          1       1          4         1       1         1       4    
 				//             [20:17] [16]    [15]      [14]       [13]    [12]      [11:8]      [7]     [6]      [5:4]   [3:0]
 				
-				//Para el caso del procesador uniciclo, se creo un modulo para la parte condicional, sin embargo 
-				//para agregarle el pipeline, es mas siple hacerlo aqui mismo
-				//Se inicia guardando el valor de los flags
-				flipflopFlush #(2)flagReg1( clk, reset, FlagWrite[1], ALUFlags[3:2], Flags[3:2]);
-				flipflopFlush #(2)flagReg0( clk, reset, FlagWrite[0], ALUFlags[1:0], Flags[1:0]);
+				//										                                 		NoWrite             CondE                        FlagsE
+				pipelineConditionalLogic pipelineConditionalLogic_Unit(clk, reset,DtoEReg_OUT[13],DtoEReg_OUT[3:0], ALUFlags, DtoEReg_OUT[20:17],
+				//																		     PCSrcE         RegWriteE       MemWriteE        BranchE
+																						 DtoEReg_OUT[16],DtoEReg_OUT[15],DtoEReg_OUT[12],DtoEReg_OUT[7],
+				//																			FlagWriteE
+																						 DtoEReg_OUT[5:4], PCSrcE,RegWriteE,MemWriteE, BranchTakenE,Flags);
 				
-				//                             FlagsE               CondE
-				conditions conditions_Unit( DtoEReg_OUT[3:0], DtoEReg_OUT[20:17], CondEx);
 				
-				//									 FlagWriteE
-				assign FlagWrite  		= DtoEReg_OUT[5:4] & {2{CondEx}};
-				//									 RegWriteE                     NoWrite
-				assign RegWriteE  		= DtoEReg_OUT[15]  & CondEx & ~DtoEReg_OUT[13];
-				//									 MemWriteE
-				assign MemWriteE  		= DtoEReg_OUT[12]  & CondEx;
-				//                           PCSrcE
-				assign PCSrcE     		= DtoEReg_OUT[16]  & CondEx;
-				//									  BranchE
-				assign BranchTakenE    	= DtoEReg_OUT[7]  & CondEx;
+				
 				//                           ALUSrcE
 				assign ALUSrcE 		 	= DtoEReg_OUT[6];			// ALUSrcE llega al Mux que esta antes de la ALU en el datapath
 				//									ALUControlE
@@ -84,7 +74,7 @@ module pipelineControlUnit(input logic clk, reset,
 				assign MemtoRegW   = MtoWBReg_OUT[0];					// MemtoRegW al mux final del datapath
 				
 				// si PCW_DEM = 1 entonces se esta reescribiendo el PC en alguna de las etapas de Decode, Execute o Memory		
-				assign PCW_DEM = PCSrcD + PCSrcE + EtoMReg_OUT[3]; 	
+				assign PCW_DEM = PCSrcD | PCSrcE | EtoMReg_OUT[3]; 	
 								
 					
 endmodule 

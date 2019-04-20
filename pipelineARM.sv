@@ -19,7 +19,7 @@ module pipelineARM(input  logic clk, reset,
 																	ALUSrc,ALUControl,
 																	MemWrite, MemtoRegW, MemtoRegE,PCSrcW,
 																	BranchTakenE,PCW_DEM);
-					 
+	
 		pipelineDatapath pipelineDatapath_Unit(clk, reset, 
 															RegSrc, RegWriteW, ImmSrc, 
 															ALUSrc, ALUControl, 
