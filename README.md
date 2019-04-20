@@ -1,1 +1,1 @@
-# % stage Pipeline ARM processor
+# 5 stage Pipeline ARM processor
