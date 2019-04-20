@@ -1,1 +1,1 @@
-# Pipelined_ARM
+# 5 stage Pipeline ARM processor
