@@ -1,9 +1,9 @@
 module pipelineDecoder(input  logic [1:0] Op,
-							  input  logic [5:0] Funct,
+							  input  logic [5:0] funct,
 							  input  logic [3:0] Rd,
 							  output logic [1:0] FlagW,
 							  output logic 	   PCS, RegW, MemW, NoWrite,MemtoReg, ALUSrc,
-							  output logic [1:0] ImmSrc, RegSrc, 
+							  output logic [1:0] immSrc, RegSrc, 
 							  output logic [3:0] ALUControl,
 							  output logic       BranchD );				
 

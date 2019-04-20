@@ -10,7 +10,7 @@ module pipelineDatapath( input logic clk, reset,
 								 input logic [31:0] InstrF,
 								 input logic [31:0] ReadData,
 								 input  logic [1:0]  ForwardAE, ForwardBE,
-								 input  logic  StallF, stallD, flushD, flushE, 
+								 input  logic  stallF, stallD, flushD, flushE, 
 								 output logic [3:0] ALUFlags,
 								 output logic [4:0]  match,
 								 output logic [31:0] PCF, 
@@ -19,9 +19,9 @@ module pipelineDatapath( input logic clk, reset,
 					logic [107:0] DtoEReg_IN, DtoEReg_OUT;
 					logic [67:0]  EtoMReg_IN, EtoMReg_OUT;
 					logic [67:0]  MtoWBReg_IN, MtoWBReg_OUT;
-					logic [31:0]  muxPC_Out, PCF, PCPlus4, ExtImm, WriteDataE, SrcAE, SrcBE,RD1,RD2, ResultW, ALUResultE;
+					logic [31:0]  muxPC_Out, PCPlus4, ExtImm, WriteDataE, PC, SrcAE, SrcBE,RD1,RD2, ResultW, ALUResultE;
 					logic [3:0]   WA3W, WA3E, WA3M;
-					logic [3:0]   RA1E, RA2E;		
+					logic [3:0]   RA1D, RA2D, RA1E, RA2E;		
 							
 							
 					logic match_1e_m, match_2e_m, match_1e_w, match_2e_w, match_12d_e;
@@ -44,9 +44,9 @@ module pipelineDatapath( input logic clk, reset,
 					
 					//Ahora proseguimos con la parte antes de la memoria de registros
 					//El primer mux le entra Rn(Instr[19:16]) y el numero 15 ademas el selector seria el RegSrcD[0]
-					MUX_2 #(4)  RA1DMux_Unit(InstFtoInstD_OUT[19:16], 4'b1111, RegSrc[0], RA1D);
+					MUX_2 #(4)  RA1DMux_Unit(InstFtoInstD_OUT[19:16], 4'b1111, RegSrcD[0], RA1D);
 					//El primer mux le entra Rm(Instr[3:0]) y el Rd(Inst[15:12]) el selector seria el RegSrcD[1]
-					MUX_2 #(4)  RA2DMux_Unit(InstFtoInstD_OUT[3:0], InstFtoInstD_OUT[15:12], RegSrc[1], RA2D);
+					MUX_2 #(4)  RA2DMux_Unit(InstFtoInstD_OUT[3:0], InstFtoInstD_OUT[15:12], RegSrcD[1], RA2D);
 					//Ahora proseguimos con la memoria de registros
 					register_file register_file_unit(clk, 				//CLK
 																RegWriteW,		//WE3
@@ -60,7 +60,7 @@ module pipelineDatapath( input logic clk, reset,
 												
 												
 					//Ahora el extend
-					extend extend_unit(ImmSrc,
+					extend extend_unit(ImmSrcD,
 											 InstFtoInstD_OUT[23:0],
 											 ExtImm);
 					//--------------------------------------Registro de Decode a Execute-----------------------------------------------------------
@@ -75,14 +75,14 @@ module pipelineDatapath( input logic clk, reset,
 					
 					//Ahora agregamos los mux que dan como resultado SrcAE y SrcBE
 					//										RD1E(00)		  ResultW(01)  ALUOutM(10)
-					MUX_3 #(32) srcAEMux_Unit(DtoEReg_OUT[99:68], ResultW,      ALUOutM, forwardAE, SrcAE);
+					MUX_3 #(32) srcAEMux_Unit(DtoEReg_OUT[99:68], ResultW,      ALUOutM, ForwardAE, SrcAE);
 					//										  RD2E(00)		  ResultW(01)	ALUOutM(10)
-					MUX_3 #(32) WriteDataMux_Unit(DtoEReg_OUT[67:36], ResultW,  ALUOutM, forwardBE, WriteDataE);	
+					MUX_3 #(32) WriteDataMux_Unit(DtoEReg_OUT[67:36], ResultW,  ALUOutM, ForwardBE, WriteDataE);	
 					//
 					MUX_2 #(32) SrcBEMux_Unit(WriteDataE, DtoEReg_OUT[31:0], ALUSrcE, SrcBE);
 						
 					// ALU logic
-					ALU_N_bits #(32) aALU_N_bits_Unit(SrcAE, SrcBE, ALUControl, ALUFlags, ALUResultE);
+					ALU_N_bits #(32) aALU_N_bits_Unit(SrcAE, SrcBE, ALUControlE, ALUFlags, ALUResultE);
 					
 					//--------------------------------------Registro de Execute a Memory-----------------------------------------------------------
 					//																	WAsE

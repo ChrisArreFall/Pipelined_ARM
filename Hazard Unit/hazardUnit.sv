@@ -1,5 +1,5 @@
-module hazardUnit(input  logic [4:0]  match,
-					   input  logic	RegWriteM, RegWriteW, MemtoRegE, 
+module hazardUnit(input  logic [4:0]  match, 
+					   input  logic PCF, PCSrcW, RegWriteM, RegWriteW, MemtoRegE, BranchTakenE,
 					   output logic [1:0]  forwardAE, forwardBE,
 					   output logic stallD, stallF, flushD, flushE);		
 				logic LDRstall;
@@ -22,7 +22,7 @@ module hazardUnit(input  logic [4:0]  match,
 				 
 				//For control hazards.    
 				assign stallD = LDRstall;							    		// stall decode if ldrstall
-				assign stallF = LDRstall + PCWrPendingF;					// stall fetch if PCWrPendingF
+				assign stallF = LDRstall + PCF;								// stall fetch if PCF
 				assign flushE = LDRstall + BranchTakenE;					// flush execute register if branch taken
-				assign flushD = PCWrPendingF + PCSrcW + BranchTakenE;	// flush decode register if PCWrPendingF OR PC is written in writeback OR branch is taken.			
+				assign flushD = PCF + PCSrcW + BranchTakenE;				// flush decode register if PCF OR PC is written in writeback OR branch is taken.			
 endmodule 

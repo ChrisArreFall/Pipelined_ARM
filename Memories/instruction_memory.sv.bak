@@ -2,11 +2,9 @@ module instruction_memory(input logic [31:0] A,
 								  output logic [31:0] RD);
 								  
 	//memoria de las instrucciones se hara de 31 instucciones por el momento	
-	logic [31:0] memory [0:31];
+	logic [31:0] memory [31:0];
 	initial 
-		begin
-			$readmemh("memfile.dat",memory);
-		end
+		$readmemh("C:\\Users\\Chris\\Documents\\TEC\\Taller\\Proyecto\\Processor\\ARMv4_Processor\\ARMV4\\instructions\\instrucciones1.mem",memory);
 	//ya que la instruccion esta desfasada 8 bytes entonces eliminare los 
 	//primeros 2 bits para lograr estar en la memoria actual
 	//             31:2     xx

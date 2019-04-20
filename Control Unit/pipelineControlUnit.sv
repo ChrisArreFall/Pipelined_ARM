@@ -26,9 +26,9 @@ module pipelineControlUnit(input logic clk, reset,
 				pipelineRegFtoD  #(32) pipelineRegFtoD_Unit( clk, reset, ~stallD, flushD, InstFtoInstD_IN, InstFtoInstD_OUT);  //###################################################
 				//Inicializamos el decoder para la instruccion
 				//								Op					     funct				           Rd						
-				pipelineDecoder pipelineDecoder_Unit(.Op(InstFtoInstD_OUT[27:26]), .Funct(InstFtoInstD_OUT[25:20]), .Rd(InstFtoInstD_OUT[15:12]),
+				pipelineDecoder pipelineDecoder_Unit(.Op(InstFtoInstD_OUT[27:26]), .funct(InstFtoInstD_OUT[25:20]), .Rd(InstFtoInstD_OUT[15:12]),
 																 .FlagW(FlagWriteD), .PCS(PCSrcD), .RegW(RegWriteD), .MemW(MemWriteD),.NoWrite(NoWrite), .MemtoReg(MemtoRegD), 
-																 .ALUSrc(ALUSrcD), .ImmSrc(ImmSrcD), .RegSrc(RegSrcD), .ALUControl(ALUControlD), .BranchD(BranchD));
+																 .ALUSrc(ALUSrcD), .immSrc(ImmSrcD), .RegSrc(RegSrcD), .ALUControl(ALUControlD), .BranchD(BranchD));
 				//---------------------------------------Decode a Execute---------------------------------------------------------------------------------
 				//Ahora seguimos con la etapa de Decode a Execute
 				//							    4       1        1          1         1         1           4          1        1         1                 4    
@@ -42,8 +42,8 @@ module pipelineControlUnit(input logic clk, reset,
 				//Para el caso del procesador uniciclo, se creo un modulo para la parte condicional, sin embargo 
 				//para agregarle el pipeline, es mas siple hacerlo aqui mismo
 				//Se inicia guardando el valor de los flags
-				flipflopD #(2)flagReg1( clk, reset, FlagWrite[1], ALUFlags[3:2], Flags[3:2]);
-				flipflopD #(2)flagReg0( clk, reset, FlagWrite[0], ALUFlags[1:0], Flags[1:0]);
+				flipflopFlush #(2)flagReg1( clk, reset, FlagWrite[1], ALUFlags[3:2], Flags[3:2]);
+				flipflopFlush #(2)flagReg0( clk, reset, FlagWrite[0], ALUFlags[1:0], Flags[1:0]);
 				
 				//                             FlagsE               CondE
 				conditions conditions_Unit( DtoEReg_OUT[3:0], DtoEReg_OUT[20:17], CondEx);
