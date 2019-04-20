@@ -1,1 +1,1 @@
-# Pipelined_ARM
+# % stage Pipeline ARM processor
