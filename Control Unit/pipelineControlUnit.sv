@@ -25,7 +25,7 @@ module pipelineControlUnit(input logic clk, reset,
 				//obtenemos la salida del primer registro del pipeline 
 				pipelineRegFtoD  #(32) pipelineRegFtoD_Unit( clk, reset, ~stallD, flushD, InstFtoInstD_IN, InstFtoInstD_OUT);  //###################################################
 				//Inicializamos el decoder para la instruccion
-				//								Op					     funct				           Rd						
+				//								                            Op					     funct				           Rd						
 				pipelineDecoder pipelineDecoder_Unit(.Op(InstFtoInstD_OUT[27:26]), .funct(InstFtoInstD_OUT[25:20]), .Rd(InstFtoInstD_OUT[15:12]),
 																 .FlagW(FlagWriteD), .PCS(PCSrcD), .RegW(RegWriteD), .MemW(MemWriteD),.NoWrite(NoWrite), .MemtoReg(MemtoRegD), 
 																 .ALUSrc(ALUSrcD), .immSrc(ImmSrcD), .RegSrc(RegSrcD), .ALUControl(ALUControlD), .BranchD(BranchD));

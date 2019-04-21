@@ -22,7 +22,7 @@ module hazardUnit(input  logic [4:0]  match,
 				 
 				//For control hazards.    
 				assign stallD = LDRstall;							    		// stall decode if ldrstall
-				assign stallF = LDRstall + PCF;								// stall fetch if PCF
-				assign flushE = LDRstall + BranchTakenE;					// flush execute register if branch taken
-				assign flushD = PCF + PCSrcW + BranchTakenE;				// flush decode register if PCF OR PC is written in writeback OR branch is taken.			
+				assign stallF = LDRstall | PCF;								// stall fetch if PCF
+				assign flushE = LDRstall | BranchTakenE;					// flush execute register if branch taken
+				assign flushD = PCF | PCSrcW | BranchTakenE;				// flush decode register if PCF OR PC is written in writeback OR branch is taken.			
 endmodule 

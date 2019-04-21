@@ -120,7 +120,7 @@ module pipelineDatapath( input logic clk, reset,
 					assign match_2e_m = ( RA2E == WA3M );   
 					assign match_1e_w = ( RA1E == WA3W );   
 					assign match_2e_w = ( RA2E == WA3W );   
-					assign match_12d_e = ( RA1D == WA3E ) + ( RA2D == WA3E );	
+					assign match_12d_e = ( RA1D == WA3E ) | ( RA2D == WA3E );	
 					assign match = { match_12d_e, match_1e_m, match_2e_m, match_1e_w, match_2e_w };
 								 
 endmodule

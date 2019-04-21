@@ -4,7 +4,7 @@ module ALU_N_bits#(parameter N=32) (input logic [N-1:0] A, B,
 											output logic [N-1:0] RESULT);
 											
 					//flags 3 2 1 0
-					//      Z N C V
+					//      N Z C V  -> N Z C V
 
 					//ALUControl 
 					//0000 suma
