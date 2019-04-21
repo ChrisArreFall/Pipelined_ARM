@@ -30,7 +30,7 @@ module pipelineARM(input  logic clk, reset,
 															stallF, stallD, flushD, flushE, 
 															ALUFlags, match,PC, ALUResult, WriteData);
 
-		hazardUnit hazardUnit_Unit(match,PCSrcW,PCW_DEM,
+		hazardUnit hazardUnit_Unit(match,PCW_DEM,PCSrcW,
 											RegWriteM, RegWriteW, MemtoRegE, BranchTakenE,
 											forwardAE, forwardBE,
 											stallD, stallF, flushD, flushE);
